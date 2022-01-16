@@ -109,12 +109,41 @@ def exit_remote_api_server():
     sim.simxFinish(-1)
 
 
+def control_joints(joint , degree):
+    print('redundantRob_joint'+str(1+joint))
+    code, joint = sim.simxGetObjectHandle(client_id, 'redundantRob_joint' + str(1+joint), sim.simx_opmode_oneshot)
+    code = sim.simxSetJointPosition(client_id, joint, degree, sim.simx_opmode_oneshot)
+    print(code)
+
+    # for i in range(degree):
+    #     code = sim.simxSetJointTargetPosition(client_id, joint, i,sim.simx_opmode_oneshot)
+    #     print(code)
+    #     code = sim.simxSetJointPosition(client_id, joint, i,sim.simx_opmode_oneshot)
+    #     print(code)
+    #
+
+    return code
+
+
 if __name__ == "__main__":
 
     client_id = init_remote_api_server()
-
+    print(client_id)
     return_code = start_simulation()
+
     vision_sensor_image, image_resolution, return_code = get_vision_sensor_image()
+
+
+    while True:
+        joint = int(input("joint (0-6) : "))
+
+        if joint <= 7:
+            degree = int(input("degree : "))
+            control_joints(joint,degree)
+        else:
+            break
+
+
 
     img = transform_vision_sensor_image(vision_sensor_image,image_resolution)
     cv2.imshow('transformed image',img )

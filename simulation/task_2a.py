@@ -1,4 +1,37 @@
+'''
+*****************************************************************************************
+*
+*        		===============================================
+*           		Nirikshak Bot (NB) Theme (eYRC 2020-21)
+*        		===============================================
+*
+*  This script is to implement Task 2A of Nirikshak Bot (NB) Theme (eYRC 2020-21).
+*  
+*  This software is made available on an "AS IS WHERE IS BASIS".
+*  Licensee/end user indemnifies and will keep e-Yantra indemnified from
+*  any and all claim(s) that emanate from the use of the Software or 
+*  breach of the terms of this agreement.
+*  
+*  e-Yantra - An MHRD (now MOE) project under National Mission on Education using ICT (NMEICT)
+*
+*****************************************************************************************
+'''
 
+# Team ID:          [ Team-ID ]
+# Author List:      [ Names of team members worked on this file separated by Comma: Name1, Name2, ... ]
+# Filename:         task_2a.py
+# Functions:        init_remote_api_server, start_simulation, get_vision_sensor_image, transform_vision_sensor_image,
+# 					stop_simulation, exit_remote_api_server
+#                   [ Comma separated list of functions in this file ]
+# Global variables: client_id
+# 					[ List of global variables defined in this file ]
+
+
+####################### IMPORT MODULES #######################
+## You are not allowed to make any changes in this section. ##
+## You have to implement this task with the three available ##
+## modules for this task (numpy,opencv,os,sys,traceback)    ##
+##############################################################
 import time
 
 import numpy as np
@@ -8,9 +41,10 @@ import traceback
 ##############################################################
 
 
+# Importing the sim module for Remote API connection with CoppeliaSim
 try:
 	import sim
-
+	
 except Exception:
 	print('\n[ERROR] It seems the sim.py OR simConst.py files are not found!')
 	print('\n[WARNING] Make sure to have following files in the directory:')
@@ -18,10 +52,51 @@ except Exception:
 	sys.exit()
 
 
+# Global variable "client_id" for storing ID of starting the CoppeliaSim Remote connection
+# NOTE: DO NOT change the value of this "client_id" variable here
 client_id = -1
 
 
+################# ADD UTILITY FUNCTIONS HERE #################
+## You can define any utility functions for your code.      ##
+## Please add proper comments to ensure that your code is   ##
+## readable and easy to understand.                         ##
+##############################################################
+
+
+
+
+
+
+##############################################################
+
+
 def init_remote_api_server():
+
+	"""
+	Purpose:
+	---
+	This function should first close any open connections and then start
+	communication thread with server i.e. CoppeliaSim.
+
+	NOTE: In this Task, do not call the exit_remote_api_server function in case of failed connection to the server.
+	The test_task_2a executable script will handle that condition.
+	
+	Input Arguments:
+	---
+	None
+	
+	Returns:
+	---
+	`client_id` 	:  [ integer ]
+		the client_id generated from start connection remote API, it should be stored in a global variable
+	
+	Example call:
+	---
+	client_id = init_remote_api_server()
+	
+	NOTE: This function will be automatically called by test_task_2a executable before starting the simulation.
+	"""
 
 	global client_id
 
@@ -29,6 +104,8 @@ def init_remote_api_server():
 
 	sim.simxFinish(-1)  # just in case, close all opened connections
 	client_id = sim.simxStart("127.0.0.1", 19997, True, True, 5000, 5)  # start aconnection
+	time.sleep(1)
+	print(client_id)
 
 
 	##################################################
@@ -38,24 +115,80 @@ def init_remote_api_server():
 
 def start_simulation():
 
+	"""
+	Purpose:
+	---
+	This function should first start the simulation if the connection to server
+	i.e. CoppeliaSim was successful and then wait for last command sent to arrive
+	at CoppeliaSim server end.
+
+	NOTE: In this Task, do not call the exit_remote_api_server function in case of failed connection to the server.
+	The test_task_2a executable script will handle that condition.
+	
+	Input Arguments:
+	---
+	None
+	
+	Returns:
+	---
+	`return_code` 	:  [ integer ]
+		the return code generated from the start running simulation remote API
+	
+	Example call:
+	---
+	return_code = start_simulation()
+	
+	NOTE: This function will be automatically called by test_task_2a executable at the start of simulation.
+	"""
 
 	global client_id
 
 	return_code = 0
 
+	##############	ADD YOUR CODE HERE	##############
 
 	return_code = sim.simxStartSimulation(client_id, sim.simx_opmode_blocking)
-	time.sleep(0.5)
-	return_code = sim.simxStartSimulation(client_id, sim.simx_opmode_oneshot)
+	time.sleep(1)
+	return_code = sim.simxStartSimulation(client_id, sim.simx_opmode_buffer)
+
+	returnCode = sim.simxSynchronous(client_id, True)
+	returnCode = sim.simxSynchronousTrigger(client_id)
 
 
+	
 
+	##################################################
 
 	return return_code
 
 
-def get_vision_sensor_image():
+def get_vision_sensor_image(visionSensorHandle):
+	
+	"""
+	Purpose:
+	---
+	This function should first get the handle of the Vision Sensor object from the scene.
+	After that it should get the Vision Sensor's image array from the CoppeliaSim scene.
 
+	Input Arguments:
+	---
+	None
+	
+	Returns:
+	---
+	`vision_sensor_image` 	:  [ list ]
+		the image array returned from the get vision sensor image remote API
+	`image_resolution` 		:  [ list ]
+		the image resolution returned from the get vision sensor image remote API
+	`return_code` 			:  [ integer ]
+		the return code generated from the remote API
+	
+	Example call:
+	---
+	vision_sensor_image, image_resolution, return_code = get_vision_sensor_image()
+
+	NOTE: This function will be automatically called by test_task_2a executable at regular intervals.
+	"""
 
 	global client_id
 
@@ -66,13 +199,14 @@ def get_vision_sensor_image():
 	##############	ADD YOUR CODE HERE	##############
 
 	# Get the handle of vision sensor
-	code, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'vision_sensor_1', sim.simx_opmode_blocking)
+	#code, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'vision_sensor_1', sim.simx_opmode_blocking)
 
 	# Get the image of vision sensor
 	return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0, sim.simx_opmode_streaming)
 
-	time.sleep(2)
-	return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,  sim.simx_opmode_buffer)
+	if return_code != sim.simx_return_ok:
+		return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
+																						  0, sim.simx_opmode_oneshot_wait)
 
 	##################################################
 
@@ -80,6 +214,36 @@ def get_vision_sensor_image():
 
 
 def transform_vision_sensor_image(vision_sensor_image, image_resolution):
+
+	"""
+	Purpose:
+	---
+	This function should:
+	1. First convert the vision_sensor_image list to a NumPy array with data-type as uint8.
+	2. Since the image returned from Vision Sensor is in the form of a 1-D (one dimensional) array,
+	the new NumPy array should then be resized to a 3-D (three dimensional) NumPy array.
+	3. Change the color of the new image array from BGR to RGB.
+	4. Flip the resultant image array about the X-axis.
+	The resultant image NumPy array should be returned.
+	
+	Input Arguments:
+	---
+	`vision_sensor_image` 	:  [ list ]
+		the image array returned from the get vision sensor image remote API
+	`image_resolution` 		:  [ list ]
+		the image resolution returned from the get vision sensor image remote API
+	
+	Returns:
+	---
+	`transformed_image` 	:  [ numpy array ]
+		the resultant transformed image array after performing above 4 steps
+	
+	Example call:
+	---
+	transformed_image = transform_vision_sensor_image(vision_sensor_image, image_resolution)
+	
+	NOTE: This function will be automatically called by test_task_2a executable at regular intervals.
+	"""
 
 	transformed_image = None
 
@@ -92,12 +256,35 @@ def transform_vision_sensor_image(vision_sensor_image, image_resolution):
 	transformed_image = cv2.flip(transformed_image, 0)
 
 	##################################################
-
+	
 	return transformed_image
 
 
 def stop_simulation():
 
+	"""
+	Purpose:
+	---
+	This function should stop the running simulation in CoppeliaSim server.
+
+	NOTE: In this Task, do not call the exit_remote_api_server function in case of failed connection to the server.
+	The test_task_2a executable script will handle that condition.
+	
+	Input Arguments:
+	---
+	None
+	
+	Returns:
+	---
+	`return_code` 	:  [ integer ]
+		the return code generated from the stop running simulation remote API
+	
+	Example call:
+	---
+	return_code = stop_simulation()
+	
+	NOTE: This function will be automatically called by test_task_2a executable at the end of simulation.
+	"""
 
 	global client_id
 
@@ -106,7 +293,7 @@ def stop_simulation():
 	##############	ADD YOUR CODE HERE	##############
 
 	return_code = sim.simxStopSimulation(client_id, sim.simx_opmode_oneshot)
-
+	
 
 	##################################################
 
@@ -114,6 +301,28 @@ def stop_simulation():
 
 
 def exit_remote_api_server():
+	
+	"""
+	Purpose:
+	---
+	This function should wait for the last command sent to arrive at the Coppeliasim server
+	before closing the connection and then end the communication thread with server
+	i.e. CoppeliaSim using simxFinish Remote API.
+
+	Input Arguments:
+	---
+	None
+	
+	Returns:
+	---
+	None
+	
+	Example call:
+	---
+	exit_remote_api_server()
+	
+	NOTE: This function will be automatically called by test_task_2a executable after ending the simulation.
+	"""
 
 	global client_id
 
@@ -121,6 +330,30 @@ def exit_remote_api_server():
 
 	sim.simxFinish(-1)
 
+	##################################################
+
+
+# NOTE:	YOU ARE NOT ALLOWED TO MAKE ANY CHANGE TO THIS FUNCTION
+# 
+# Function Name:    main
+#        Inputs:    None
+#       Outputs:    None
+#       Purpose:    This part of the code is only for testing your solution. The function does the following:
+# 						- imports 'task_1b.py' file as module
+# 						- imports 'task_1a_part1.py' file as module
+# 						- calls init_remote_api_server() function to connect with CoppeliaSim Remote API server
+# 						- then calls start_simulation() function to start the simulation
+# 						- then calls get_vision_sensor_image() function to capture an image from the Vision Sensor in CoppeliaSim scene
+# 						- then calls transform_vision_sensor_image() function to transform the captured image
+# 						  to a format compatible with OpenCV
+# 						- then the transformed image is given as input and Perspective Transform is applied
+# 						  by calling applyPerspectiveTransform function	from 'task_1b'
+# 						- lastly the output of warped_img is given to 'scan_image' function from 'task_1a_part1'
+# 						- it then asks the user whether to quit the program or not, if 'q' or 'Q' is given as input,
+# 						  then it will call stop_simulation to stop the simulation
+# 						  and calls exit_remote_api_server function to disconnect from CoppeliaSim Remote API server.
+# 
+# NOTE: Write your solution ONLY in the space provided in the above functions.
 
 if __name__ == "__main__":
 
