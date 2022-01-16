@@ -8,7 +8,7 @@ def get_grayscale(image):
 
 
 def adaptive_gausssian_threshold(img):
-    return cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, \
+    return cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,\
                                  cv2.THRESH_BINARY, 11, 2)
 
 
