@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
- 
+
 # get grayscale image
 def get_grayscale(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -66,7 +66,7 @@ def match_template(image, template):
     return cv2.matchTemplate(image, template, cv2.TM_CCOEFF_NORMED)
 
 
-img = cv2.imread('images/img1.jpg')
+img = cv2.imread('../object_detection_model/yolov5/img1.jpg')
 img = cv2.resize(img, (500, 500))
 temp = cv2.imread('images/img2.jpg')
 

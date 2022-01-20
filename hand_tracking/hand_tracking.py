@@ -1,73 +1,64 @@
-import cv2
+import cv2 as cv
 import mediapipe as mp
 import time
+import gc
 
-
-
-class handDetector:
-
+class handDetector():
     def __init__(self, mode=False, maxHands=2, detectionCon=0.5, trackCon=0.5):
         self.mode = mode
         self.maxHands = maxHands
         self.detectionCon = detectionCon
         self.trackCon = trackCon
-
-        self.mphands = mp.solutions.hands
-        self.hands = self.mphands.Hands(self.mode, self.maxHands,
-                                        self.detectionCon, self.trackCon)
+        self.mpHands = mp.solutions.hands
+        self.hands = self.mpHands.Hands(self.mode, self.maxHands, 1, self.detectionCon, self.trackCon)
         self.mpDraw = mp.solutions.drawing_utils
+    def findHands(self, image, draw=True):
+        imgRGB = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        self.result = self.hands.process(imgRGB)
 
-    def findhands(self, img, draw=True):
-
-        self.results = self.hands.process(img)
-
-        if self.results.multi_hand_landmarks:
-            for handLms in self.results.multi_hand_landmarks:
+        if self.result.multi_hand_landmarks:
+            for hand in self.result.multi_hand_landmarks:
                 if draw:
-                    self.mpDraw.draw_landmarks(img, self.handLms, self.mphands.HAND_CONNECTIONS)
-        return img
-
-    def findpos(self, img, handno=0, draw=True):
-        lmlist = []
-
-        if self.results.multi_hand_landmarks:
-            myhand = self.results.multi_hand_landmarks[handno]
-            for id, lm in enumerate(myhand.landmark):
-                h, w, c = img.shape
-                cx, cy = int(lm.x * w), int(lm.y * h)
-                print(id, cx, cy)
-                lmlist.append([id, cx, cy])
+                    self.mpDraw.draw_landmarks(image, hand, self.mpHands.HAND_CONNECTIONS)
+        return image
+    def findPosition(self, image, handNo=0, draw=True):
+        lmList = []
+        h, w, c = image.shape
+        if self.result.multi_hand_landmarks:
+            myHand = self.result.multi_hand_landmarks[handNo]
+            for id, land in enumerate(myHand.landmark):
+                cx, cy = int(land.x * w), int(land.y * h)
+                lmList.append([id, cx, cy])
                 if draw:
-                    cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
-        return lmlist
+                    cv.circle(image, (cx,cy), 15, (0,0,255), cv.FILLED)
+        return lmList
 
 
 def main():
     url = "http://192.168.43.1:8080/video"
-    cap = cv2.VideoCapture(url)
-    dectector = handDetector()
+    cap = cv.VideoCapture(url)
+    ret=1
+    pre_time = time.time()
+    gc.enable()
+    handDtc=handDetector()
 
-    st = 0
-    tt = 0
+    while ret:
+        ret, frame = cap.read()
+        crt_time = time.time()
 
-    while True:
-        success, img = cap.read()
-        img = dectector.findhands(img)
-        lmlist = dectector.findpos(img)
-        if (len(lmlist) !=0):
-            print(lmlist[4])
+        tt= int((crt_time-pre_time)*1000)
+        fps= int((1/tt)*1000)
+        image = handDtc.findHands(frame)
+        lmList = handDtc.findPosition(image)
+        cv.putText(image, str(fps), (50,50), cv.FONT_HERSHEY_COMPLEX, 1, (255,255,0))
+        image=frame
+        cv.imshow('image', image)
+        pre_time = time.time()
+        if cv.waitKey(1) == ord('q'):
+            ret = False
+            # print(lmList)
 
-        st = time.time()
-        fps = 1 / (st - tt)
-        tt = st
-        cv2.putText(img, str(int(fps)), (10, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 255), 3)
-
-        if img is not None:
-            cv2.imshow("Frame", img)
-        q = cv2.waitKey(1)
-        if q == ord("q"):
-            break
-    cv2.destroyAllWindows()
-
+        del image
+        gc.collect()
 if __name__ == "__main__":
     main()

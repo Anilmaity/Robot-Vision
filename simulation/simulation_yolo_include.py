@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 import os, sys
 import traceback
-from object_pick_and_place import PickObject
+
 ##############################################################
 
 pre_time = 0
@@ -97,27 +97,17 @@ def control_joints(joint, degree):
     code = sim.simxSetJointPosition(client_id, joint, degree * 3.14 / 180, sim.simx_opmode_oneshot_wait)
     print(code)
 
-    # response_code, joint_position = sim.simxGetJointPosition(client_id,handle_value, sim.simx_opmode_streaming)
-    # a = sim.simxSetObjectPosition(client_id,handle_value, -1, (12,0,0), sim.simx_opmode_oneshot)    
-    # code, handle_value = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint1', sim.simx_opmode_oneshot_wait)    
-    # # returnCode=sim.simxSetJointTargetVelocity(client_id,handle_value,1,sim.simx_opmode_streaming)
-    # response_value = sim.simxSetJointTargetPosition(client_id, handle_value, 90*3.14/180, sim.simx_opmode_streaming)
-    # print(code,handle_value, response_value)
-    
-    for i in range(5):
-        code, handle_value = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint'+str(i+1), sim.simx_opmode_oneshot_wait)
-        print(code,handle_value)
-        response_value = sim.simxSetJointTargetPosition(client_id, handle_value, 90*3.14/180, sim.simx_opmode_streaming+500)
-        # code = sim.simxSetJointPosition(client_id, handle_value, 90*3.14/180, sim.simx_opmode_oneshot_wait+200)
-        print('setting_code', code)
-       
-    
-    time.sleep(3)
+    # for i in range(degree):
+    #     code = sim.simxSetJointTargetPosition(client_id, joint, i,sim.simx_opmode_oneshot)
+    #     print(code)
+    #     code = sim.simxSetJointPosition(client_id, joint, i,sim.simx_opmode_oneshot)
+    #     print(code)
+    #
 
+    return code
 
-    
-
-    return 1
+import yolov5
+import pandas as pd
 
 
 if __name__ == "__main__":
@@ -127,22 +117,10 @@ if __name__ == "__main__":
     return_code = start_simulation()
     code, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'vision_sensor', sim.simx_opmode_oneshot_wait)
 
-    # print(vision_sensor_image)
-
-    # while True:
-    #     joint = int(input("joint (0-6) : "))
-
-    #     if joint <= 7:
-    #         degree = int(input("degree : "))
-    #         control_joints(joint,degree)
-    #     else:
-    #         break
-
-    PickObject(client_id)
-    # control_joints(1,1)
-    vision_sensor_image, image_resolution, return_code = get_vision_sensor_image()
     return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
                                                                                       sim.simx_opmode_streaming + 10)
+    model = yolov5.load('yolov5s.pt')
+
     time.sleep(1)
 
     while True:
@@ -164,8 +142,27 @@ if __name__ == "__main__":
         return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
                                                                                           0,
                                                                                           sim.simx_opmode_buffer)
+
         img = transform_vision_sensor_image(vision_sensor_image, image_resolution,2)
+
+        results = model(img)
+        result = results.pandas().xyxy[0]  # img1 predictions (pandas)
+        rest = pd.DataFrame(result)
+        # print(rest)
+        for i, obj in enumerate(rest.iloc):
+            # print(obj)
+            # print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
+
+            cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),
+                          2)
+            cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 2)),
+                        (int(obj['xmin']), int(obj['ymin'])),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
         cv2.putText(img, str(fps), (50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,0))
+
+
+
+
         cv2.imshow('transformed image', img)
         q = cv2.waitKey(1)
         if q == ord("q"):
