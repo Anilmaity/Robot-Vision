@@ -14,7 +14,7 @@ def PickObject(client_id):
     sim.simxSetJointTargetPosition(client_id, handle_value3, -10*3.14/180, sim.simx_opmode_streaming+500)
     sim.simxSetJointTargetPosition(client_id, handle_value5, -70*3.14/180, sim.simx_opmode_streaming+500)
     sim.simxSetJointTargetPosition(client_id, handle_value6, -90*3.14/180, sim.simx_opmode_streaming+500)
-    # sim.simxClearIntegerSignal(client_id, 'NiryoLGripper_close',sim.simx_opmode_oneshot)
+    sim.simxClearIntegerSignal(client_id, 'NiryoLGripper_close',sim.simx_opmode_oneshot)
     # sim.simxSetIntegerSignal(client_id, 'NiryoGripper_close',sim.simx_opmode_oneshot)
     # for i in range(5):
     #     code, handle_value = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint'+str(i+1), sim.simx_opmode_oneshot_wait)
