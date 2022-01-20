@@ -106,6 +106,9 @@ def control_joints(joint, degree):
 
     return code
 
+import yolov5
+import pandas as pd
+
 
 if __name__ == "__main__":
 
@@ -116,6 +119,8 @@ if __name__ == "__main__":
 
     return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
                                                                                       sim.simx_opmode_streaming + 10)
+    model = yolov5.load('yolov5s.pt')
+
     time.sleep(1)
 
     while True:
@@ -137,8 +142,27 @@ if __name__ == "__main__":
         return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
                                                                                           0,
                                                                                           sim.simx_opmode_buffer)
+
         img = transform_vision_sensor_image(vision_sensor_image, image_resolution,2)
+
+        results = model(img)
+        result = results.pandas().xyxy[0]  # img1 predictions (pandas)
+        rest = pd.DataFrame(result)
+        # print(rest)
+        for i, obj in enumerate(rest.iloc):
+            # print(obj)
+            # print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
+
+            cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),
+                          2)
+            cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 2)),
+                        (int(obj['xmin']), int(obj['ymin'])),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
         cv2.putText(img, str(fps), (50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,0))
+
+
+
+
         cv2.imshow('transformed image', img)
         q = cv2.waitKey(1)
         if q == ord("q"):

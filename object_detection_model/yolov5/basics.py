@@ -2,10 +2,10 @@
 import yolov5
 
 # load model
-model = yolov5.load('yolov5')
+model = yolov5.load('yolov5s.pt')
 
 # set image
-img = 'https://github.com/ultralytics/yolov5/raw/master/data/images/zidane.jpg'
+img = 'img1.jpg'
 
 # perform inference
 results = model(img)
