@@ -140,10 +140,10 @@ if __name__ == "__main__":
 
     PickObject(client_id)
     # control_joints(1,1)
-    vision_sensor_image, image_resolution, return_code = get_vision_sensor_image()
-    return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
-                                                                                      sim.simx_opmode_streaming + 10)
-    time.sleep(1)
+    # vision_sensor_image, image_resolution, return_code = get_vision_sensor_image()
+    # return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
+    #                                                                                   sim.simx_opmode_streaming + 10)
+    # time.sleep(1)
 
     while True:
         crt_time = time.time()
