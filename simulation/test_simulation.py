@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 import os, sys
 import traceback
-from object_pick_and_place import setRobot
+from object_pick_and_place import setRobot, resetPosition
 # from simulation.object_pick_and_place import setRobot
 
 
@@ -82,7 +82,7 @@ def stop_simulation():
 
     ##############	ADD YOUR CODE HERE	##############
 
-    return_code = sim.simxStopSimulation(client_id, sim.simx_opmode_oneshot)
+    return_code = sim.simxStopSimulation(client_id, sim.simx_opmode_oneshot_wait)
 
     ##################################################
 
@@ -103,8 +103,13 @@ if __name__ == "__main__":
     client_id = init_remote_api_server()
     print(client_id)
     return_code = start_simulation()
-    code, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'vision_sensor', sim.simx_opmode_oneshot_wait)
-
+    code0, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'vision_sensor', sim.simx_opmode_oneshot_wait)
+    code1, handle_value1 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint1', sim.simx_opmode_blocking)
+    code2, handle_value2 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint2', sim.simx_opmode_blocking)
+    code3, handle_value3 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint3', sim.simx_opmode_blocking)
+    code4, handle_value4 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint4', sim.simx_opmode_blocking)
+    code5, handle_value5 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint5', sim.simx_opmode_blocking)
+    code6, handle_value6 = sim.simxGetObjectHandle(client_id, 'NiryoOneJoint6', sim.simx_opmode_blocking)
     # print(vision_sensor_image)
 
     # while True:
@@ -122,18 +127,18 @@ if __name__ == "__main__":
     # time.sleep(1)
 
     link = 0
-    setRobot(client_id, 15, 1)
+    setRobot(client_id, 15, 1,  handle_value1, handle_value2, handle_value3, handle_value4, handle_value5, handle_value6)
     while link!=20:
         link = int(input("enter link number"))
         joint_angle =  int(input('enter joint angle'))
-        setRobot(client_id, link, joint_angle)
-        a=2
+        setRobot(client_id, link, joint_angle, handle_value1, handle_value2, handle_value3, handle_value4, handle_value5, handle_value6)
+  
 
-    while True:
-        crt_time = time.time()
-        tt = int((crt_time - pre_time) * 1000)
-        pre_time = crt_time
-        fps = int((1/tt)*1000)
+    # while True:
+    #     crt_time = time.time()
+    #     tt = int((crt_time - pre_time) * 1000)
+    #     pre_time = crt_time
+    #     fps = int((1/tt)*1000)
 
         '''
         joint = int(input("joint (0-6) : "))
@@ -151,9 +156,12 @@ if __name__ == "__main__":
         # img = transform_vision_sensor_image(vision_sensor_image, image_resolution,2)
         # cv2.putText(img, str(fps), (50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255,255,0))
         # cv2.imshow('transformed image', img)
-        q = cv2.waitKey(1)
-        if q == ord("q"):
-            break
+        # q = cv2.waitKey(1)
+        # if q == ord("q"):
+        #     break
 
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
+    resetPosition(client_id,  handle_value1, handle_value2, handle_value3, handle_value4, handle_value5, handle_value6)
+    time.sleep(6)
+    stop_simulation()
     return_code = stop_simulation()
