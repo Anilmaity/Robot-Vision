@@ -122,6 +122,7 @@ if __name__ == "__main__":
     # time.sleep(1)
 
     link = 0
+    setRobot(client_id, 15, 1)
     while link!=20:
         link = int(input("enter link number"))
         joint_angle =  int(input('enter joint angle'))
