@@ -142,7 +142,7 @@ if __name__ == "__main__":
         return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
                                                                                           0,
                                                                                           sim.simx_opmode_buffer)
-
+        print(image_resolution)
         img = transform_vision_sensor_image(vision_sensor_image, image_resolution,2)
 
         results = model(img)
