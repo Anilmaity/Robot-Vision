@@ -63,7 +63,6 @@ def pickObject(client_id,  handle_value1, handle_value2, handle_value3, handle_v
     sim.simxSetJointTargetPosition(client_id, handle_value3,-30*3.14/180, sim.simx_opmode_oneshot)
     sim.simxSetJointTargetPosition(client_id, handle_value4,-100*3.14/180, sim.simx_opmode_oneshot)
 
-
     return 1
 
 
