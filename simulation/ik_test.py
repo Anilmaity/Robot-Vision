@@ -153,6 +153,107 @@ if __name__ == "__main__":
     start_time = 0
 
     object_pick_list = ['book']
+    angle_initiatializer = [0, 0, 0, 0, 0, 0]
+
+    for i in range(1, 35):
+        i = i
+        # Servo (joint) angles in degrees
+        servo_0_angle = -i  # Joint 1
+        servo_1_angle = i  # Joint 2
+        servo_2_angle = 0  # Joint 3
+        servo_3_angle = 1  # Joint 4
+        servo_4_angle = 0  # Joint 5
+
+        # This servo would open and close the gripper (end-effector)
+        servo_5_angle = 0  # Joint 6
+
+        # Convert servo angles from degrees to radians
+        servo_0_angle = np.deg2rad(servo_0_angle)
+        servo_1_angle = np.deg2rad(servo_1_angle)
+        servo_2_angle = np.deg2rad(servo_2_angle)
+        servo_3_angle = np.deg2rad(servo_3_angle)
+        servo_4_angle = np.deg2rad(servo_4_angle)
+        servo_5_angle = np.deg2rad(servo_5_angle)
+
+        # This matrix helps convert the servo_1 frame to the servo_0 frame.
+        rot_mat_0_1 = np.array([[np.cos(servo_0_angle), 0, np.sin(servo_0_angle)],
+                                [np.sin(servo_0_angle), 0, -
+                                    np.cos(servo_0_angle)],
+                                [0, 1, 0]])
+
+        # This matrix helps convert the servo_2 frame to the servo_1 frame.
+        rot_mat_1_2 = np.array([[np.cos(servo_1_angle), -np.sin(servo_1_angle), 0],
+                                [np.sin(servo_1_angle), np.cos(
+                                    servo_1_angle), 0],
+                                [0, 0, 1]])
+
+        # This matrix helps convert the servo_3 frame to the servo_2 frame.
+        rot_mat_2_3 = np.array([[np.cos(servo_2_angle), -np.sin(servo_2_angle), 0],
+                                [np.sin(servo_2_angle), np.cos(
+                                    servo_2_angle), 0],
+                                [0, 0, 1]])
+
+        # This matrix helps convert the servo_4 frame to the servo_3 frame.
+        rot_mat_3_4 = np.array([[-np.sin(servo_3_angle), 0, np.cos(servo_3_angle)],
+                                [np.cos(servo_3_angle), 0,
+                                    np.sin(servo_3_angle)],
+                                [0, 1, 0]])
+
+        # This matrix helps convert the servo_5 frame to the servo_4 frame.
+        rot_mat_4_5 = np.array([[np.cos(servo_4_angle), -np.sin(servo_4_angle), 0],
+                                [np.sin(servo_4_angle), np.cos(
+                                    servo_4_angle), 0],
+                                [0, 0, 1]])
+
+        # Calculate the rotation matrix that converts the
+        # end-effector frame (frame 5) to the servo_0 frame.
+        # rot_mat_0_5 = rot_mat_0_1 @ rot_mat_1_2 @ rot_mat_2_3 @ rot_mat_3_4 @ rot_mat_4_5
+
+        rot_mat_0_3 = rot_mat_0_1 @ rot_mat_1_2  @ rot_mat_3_4
+
+        rot_mat_0_6 = np.array([[0.0, 1.0, 0.0],
+                                [1.0, 0.0, 0.0],
+                                [0.0, 0.0, -1.0]])
+
+        # Display the rotation matrix
+        # print(rot_mat_0_3)
+
+        inv_rot_mat_0_3 = np.linalg.inv(rot_mat_0_3)
+
+        # print('inversde rotation matrix', inv_rot_mat_0_3)
+
+        # Calculate the 3x3 rotation matrix of frame 6 relative to frame 3
+        rot_mat_3_6 = inv_rot_mat_0_3 @ rot_mat_0_6
+        # print(f'rot_mat_3_6 = {rot_mat_3_6}')
+
+        theta_5 = -np.arccos(rot_mat_3_6[2, 1])
+
+        print('theta 5', theta_5*180/3.14)
+
+        theta_6 = -np.arccos(rot_mat_3_6[2, 2] / np.sin(theta_5))
+
+        print('theta 6', theta_6*180/3.14)
+
+        if theta_6*180/3.14 >= 120:
+            updated_theta6 = 120
+        elif theta_6*180/3.14 <= -120:
+            updated_theta6 = -120
+        else:
+            updated_theta6 = theta_6*180/3.14
+
+        theta_4 = np.arccos(rot_mat_3_6[0, 1] / np.sin(theta_5))
+
+        print('theta 4', theta_4*180/3.14)
+
+        angle_initiatializer = [1, 1, 0, 0, 0, 0]
+        angle_initiatializer[4] = theta_5*180/3.14
+        angle_initiatializer[5] = updated_theta6
+        angle_initiatializer[3] = theta_4*180/3.14
+        angle_initiatializer[0] = -i
+        angle_initiatializer[1] = i
+        print(angle_initiatializer)
+
+        move_joint(JointHandler, angle_initiatializer, 'open')
     while True:
         crt_time = time.time()
         tt = int((crt_time - pre_time) * 1000)
@@ -174,47 +275,32 @@ if __name__ == "__main__":
         img = transform_vision_sensor_image(
             vision_sensor_image, image_resolution, 1)
 
-        results = model(img)
-        result = results.pandas().xyxy[0]  # img1 predictions (pandas)
-        rest = pd.DataFrame(result)
+        # results = model(img)
+        # result = results.pandas().xyxy[0]  # img1 predictions (pandas)
+        # rest = pd.DataFrame(result)
         # print(rest)
         object_ = ''
-        for i, obj in enumerate(rest.iloc):
-            # print(obj)
-            # print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
-            cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),
-                          2)
+        # for i, obj in enumerate(rest.iloc):
+        # print(obj)
+        # print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
+        # cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),
+        #               2)
 
-            if (obj['name'] == object_pick_list[0]):
-                object_ = obj['name']
-                xposition = (obj['xmin'] + obj['xmax']) / 2
-                yposition = (obj['ymin'] + obj['ymax']) / 2
+        # if (obj['name'] == object_pick_list[0]):
+        #     object_ = obj['name']
+        #     xposition = (obj['xmin'] + obj['xmax']) / 2
+        #     yposition = (obj['ymin'] + obj['ymax']) / 2
 
-            # cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 1)),
-            #             (int(obj['xmin']), int(obj['ymin'])),
-            #             cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
-        cv2.putText(img, str(fps), (50, 50),
-                    cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+        # cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 1)),
+        #             (int(obj['xmin']), int(obj['ymin'])),
+        #             cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+        # cv2.putText(img, str(fps), (50, 50),
+        #             cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
 
-        if object_ == object_pick_list[0]:
-            print(object_, xposition, yposition)
-            if (xposition <= 250):
-                move_joint(JointHandler, [0, -14, -30, -100, 78, 45], 'open')
-                start_time = time.time()
+        # if object_ == object_pick_list[0]:
+        # print(object_, xposition, yposition)
 
-        if (start_time != 0):
-            if (time.time() - start_time > 4 and time.time() - start_time < 6):
-                move_joint(JointHandler, [90, 0, 0, -100, 0, 0], 'open')
-
-            if (time.time() - start_time > 6):
-                move_joint(JointHandler, [90, 0, 0, -100, 0, 0], 'close')
-                print("Complete 1 task")
-                start_time = 0
-                pickpos = False
-
-        if (pickpos != True and object_ == object_pick_list[0]):
-            move_joint(JointHandler, [0, -14, -30, -100, 78, 45], 'close')
-            pickpos = True
+        move_joint(JointHandler, angle_initiatializer, 'open')
 
         cv2.imshow('transformed image', img)
         q = cv2.waitKey(1)

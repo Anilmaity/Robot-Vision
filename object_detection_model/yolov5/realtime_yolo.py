@@ -118,19 +118,19 @@ ID	OBJECT (PAPER)	OBJECT (2014 REL.)	OBJECT (2017 REL.)	SUPER CATEGORY
 """
 
 
+import pandas as pd
 import yolov5
 import cv2
 import time
 
 url = "http://192.168.43.1:8080/video"
-cap = cv2.VideoCapture(url)
+cap = cv2.VideoCapture(0)
 
 
 # load model
 model = yolov5.load('yolov5s.pt')
-import pandas as pd
 
-pre_time= 1
+pre_time = 1
 
 while True:
 
@@ -138,24 +138,26 @@ while True:
 
     tt = int((crt_time - pre_time) * 1000)
     fps = int((1 / tt) * 1000)
-    pre_time=crt_time
+    pre_time = crt_time
     success, img = cap.read()
-    #print(img.shape)
-
+    # print(img.shape)
 
     results = model(img)
     result = results.pandas().xyxy[0]  # img1 predictions (pandas)
     rest = pd.DataFrame(result)
-    #print(rest)
-    for i,obj in enumerate(rest.iloc):
-        #print(obj)
+    # print(rest)
+    for i, obj in enumerate(rest.iloc):
+        # print(obj)
         #print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
 
-        cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) , (0, 0, 255), 2)
-        cv2.putText(img, obj['name']+"  "+str(round(obj['confidence'],2)),(int(obj['xmin']),int(obj['ymin'])), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
-    cv2.putText(img, str(fps),(50,50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+        cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(
+            obj['xmax']), int(obj['ymax'])), (0, 0, 255), 2)
+        cv2.putText(img, obj['name']+"  "+str(round(obj['confidence'], 2)), (int(
+            obj['xmin']), int(obj['ymin'])), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+    cv2.putText(img, str(fps), (50, 50),
+                cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
 
-    #print(results)
+    # print(results)
 
     if img is not None:
         cv2.imshow("Frame", img)
@@ -164,9 +166,4 @@ while True:
         break
 
 
-
 cv2.destroyAllWindows()
-
-
-
-
