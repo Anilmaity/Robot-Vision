@@ -162,11 +162,12 @@ if __name__ == "__main__":
     x_y_plane_positions = [[50, -20], [20, -20], [20, 20], [50, 20], [30, 0]]
     positions_3d = [[40, -20, 30], [20, -20, 30], [20, 20, 30], [40, 20, 30],
                     [40, 20, 40], [20, 20, 40], [20, -20, 40], [40, -20, 40], [30, 1, 40]]
-
-    for pos in x_z_plane_positions:
-        time.sleep(3)
+    positions_3d_with_gripper_directions = [[40, -20, 30, 'right'], [20, -20, 30, 'right'], [20, 20, 30, 'left'], [40, 20, 30, 'left'],
+                                            [40, 20, 40, 'left'], [20, 20, 40, 'left'], [20, -20, 40, 'right'], [40, -20, 40, 'right'], [30, 1, 40, 'center']]
+    for pos in positions_3d_with_gripper_directions:
+        time.sleep(5)
         angle_initiatializer = inverse_kinematics.get_robot_angles(
-            pos[0], 1, pos[1])
+            pos[0], pos[1], pos[2], pos[3])
         print(angle_initiatializer)
         # given_x_position = pos[0]
         # given_y_position = pos[1]
@@ -297,6 +298,7 @@ if __name__ == "__main__":
         # angle_initiatializer[1] = -(90 - theta_1*180/3.14)
         # angle_initiatializer[2] = theta_2
         # print(angle_initiatializer)
+        # angle_initiatializer[5] = pos
         move_joint(JointHandler, angle_initiatializer, 'open')
     while True:
         crt_time = time.time()

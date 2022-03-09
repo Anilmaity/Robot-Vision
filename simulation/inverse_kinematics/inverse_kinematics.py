@@ -134,7 +134,7 @@ def get_orientation_angles(theta_0, theta_1, theta_2):
     return orientation_angles
 
 
-def get_updated_orientation_angles(theta_0_1, theta_1, theta_2):
+def get_updated_orientation_angles(theta_0_1, theta_1, theta_2, gripper_direction):
     orientation_angles = [0, 0, 0]
 
     joint_0_angle = theta_0_1
@@ -160,6 +160,7 @@ def get_updated_orientation_angles(theta_0_1, theta_1, theta_2):
                             [np.sin(joint_2_angle), 0, -
                              np.cos(joint_2_angle)],
                             [0, 1, 0]])
+
     # print('rot mat 12', rot_mat_2_3)
 
     rot_mat_0_3 = rot_mat_0_1 @ rot_mat_1_2 @ rot_mat_2_3
@@ -169,10 +170,22 @@ def get_updated_orientation_angles(theta_0_1, theta_1, theta_2):
                             [0.0, -1.0, 0.0],
                             [1.0, 0.0, 0.0]])
 
+    if gripper_direction == 'left':
+        rot_mat_0_6 = np.array([[0.0, 1.0, 0.0],
+                                [0.0, 0.0, 1.0],
+                                [1.0, 0.0, 0.0]])
+    elif gripper_direction == 'right':
+        rot_mat_0_6 = np.array([[0.0, -1.0, 0.0],
+                                [0.0, 0.0, -1.0],
+                                [1.0, 0.0, 0.0]])
+    else:
+        rot_mat_0_6 = np.array([[0.0, 0.0, 1.0],
+                                [0.0, -1.0, 0.0],
+                                [1.0, 0.0, 0.0]])
+
     inv_rot_mat_0_3 = np.linalg.inv(rot_mat_0_3)
 
     rot_mat_3_6 = inv_rot_mat_0_3 @ rot_mat_0_6
-    print('rot_mat_36', rot_mat_3_6)
 
     theta_5 = np.arccos(rot_mat_3_6[2, 2])
     print('theta_5', theta_5)
@@ -190,13 +203,35 @@ def get_updated_orientation_angles(theta_0_1, theta_1, theta_2):
 
     print(joint_0_angle, joint_1_angle, joint_2_angle)
 
+    # Check that the angles we calculated result in a valid rotation matrix
+    r11 = np.cos(theta_4) * np.cos(theta_5) * np.cos(theta_6) - \
+        np.sin(theta_4) * np.sin(theta_6)
+    r12 = -np.cos(theta_4) * np.cos(theta_5) * np.sin(theta_6) - \
+        np.sin(theta_4) * np.cos(theta_6)
+    r13 = np.cos(theta_4) * np.sin(theta_5)
+    r21 = np.sin(theta_4) * np.cos(theta_5) * np.cos(theta_6) + \
+        np.cos(theta_4) * np.sin(theta_6)
+    r22 = -np.sin(theta_4) * np.cos(theta_5) * np.sin(theta_6) + \
+        np.cos(theta_4) * np.cos(theta_6)
+    r23 = np.sin(theta_4) * np.sin(theta_5)
+    r31 = -np.sin(theta_5) * np.cos(theta_6)
+    r32 = np.sin(theta_5) * np.sin(theta_6)
+    r33 = np.cos(theta_5)
+
+    check_rot_mat_3_6 = np.array([[r11, r12, r13],
+                                  [r21, r22, r23],
+                                  [r31, r32, r33]])
+
+    print('check rot_3_6 matrix', check_rot_mat_3_6)
+
     orientation_angles[0] = theta_4*180/3.14
     orientation_angles[1] = theta_5*180/3.14
     orientation_angles[2] = theta_6*180/3.14
+
     return orientation_angles
 
 
-def get_robot_angles(x_given_position, y_given_position, z_given_position):
+def get_robot_angles(x_given_position, y_given_position, z_given_position, gripper_orientation):
 
     x_position = x_given_position
     y_position = y_given_position
@@ -210,7 +245,7 @@ def get_robot_angles(x_given_position, y_given_position, z_given_position):
     #     position_angles[0], position_angles[1], position_angles[2])
 
     orientation_angles = get_updated_orientation_angles(
-        position_angles[0], position_angles[1], position_angles[2])
+        position_angles[0], position_angles[1], position_angles[2], gripper_orientation)
 
     calc_joint_angles = [0, 0, 0, 0, 0, 0]
     calc_joint_angles[0] = position_angles[0]
