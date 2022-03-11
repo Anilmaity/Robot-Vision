@@ -140,6 +140,7 @@ if __name__ == "__main__":
 
     return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
                                                                                       sim.simx_opmode_streaming + 50)
+    print(return_code, image_resolution, 'image resolution')
     model = yolov5.load('yolov5s.pt')
 
     time.sleep(1)
@@ -164,8 +165,10 @@ if __name__ == "__main__":
                     [40, 20, 40], [20, 20, 40], [20, -20, 40], [40, -20, 40], [30, 1, 40]]
     positions_3d_with_gripper_directions = [[40, -20, 30, 'right'], [20, -20, 30, 'right'], [20, 20, 30, 'left'], [40, 20, 30, 'left'],
                                             [40, 20, 40, 'left'], [20, 20, 40, 'left'], [20, -20, 40, 'right'], [40, -20, 40, 'right'], [30, 1, 40, 'center']]
-    for pos in positions_3d_with_gripper_directions:
-        time.sleep(5)
+    positions_3d_with_gripper_directions_static = [
+        [30, 1, 40, 'right'], [30, 1, 40, 'left'], [30, 1, 40, 'center']]
+    for pos in positions_3d_with_gripper_directions_static:
+        time.sleep(10)
         angle_initiatializer = inverse_kinematics.get_robot_angles(
             pos[0], pos[1], pos[2], pos[3])
         print(angle_initiatializer)
@@ -317,7 +320,7 @@ if __name__ == "__main__":
         return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
                                                                                           0,
                                                                                           sim.simx_opmode_buffer)
-
+        print(return_code, image_resolution)
         img = transform_vision_sensor_image(
             vision_sensor_image, image_resolution, 1)
 
