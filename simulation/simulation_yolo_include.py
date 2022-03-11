@@ -9,6 +9,7 @@ import sys
 import traceback
 import pandas as pd
 import math
+from inverse_kinematics import inverse_kinematics
 
 ##############################################################
 
@@ -148,7 +149,19 @@ if __name__ == "__main__":
         JointHandler.append(handler)
 
     return_code = start_simulation()
-    move_joint(JointHandler, [0, 0, 0, 0, 0, 0], 'close')
+
+    # move_joint(JointHandler, [0, 0, 0, 0, 0, 0], 'close')
+    # angle_initiatializer = [0, 0, 0, 0, 0, 0]
+    # positions_3d_with_gripper_directions = [[40, -20, 30, 'right'], [20, -20, 30, 'right'], [20, 20, 30, 'left'],
+    #                                         [40, 20, 30, 'left'],
+    #                                         [40, 20, 40, 'left'], [20, 20, 40, 'left'], [20, -20, 40, 'right'],
+    #                                         [40, -20, 40, 'right'], [30, 1, 40, 'center']]
+    # for pos in positions_3d_with_gripper_directions:
+    #     time.sleep(10)
+    #     angle_initiatializer = inverse_kinematics.get_robot_angles(
+    #         pos[0], pos[1], pos[2], pos[3])
+
+
 
     start_time = 0
 

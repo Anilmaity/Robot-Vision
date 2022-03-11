@@ -124,7 +124,7 @@ import cv2
 import time
 
 url = "http://192.168.43.1:8080/video"
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(url)
 
 
 # load model
