@@ -205,35 +205,32 @@ if __name__ == "__main__":
                 yposition_cm = 15+(-50 * ((((obj['xmin'] + obj['xmax']) / 2) - 256) / 256))
                 xposition_cm = 40 + (-50 * ((((obj['ymin'] + obj['ymax']) / 2) - 256) / 256))
                 zposition_cm = 16.5
-                print(xposition_cm, yposition_cm)
                 angle_initiatializer = inverse_kinematics.get_robot_angles(
                     xposition_cm, yposition_cm, zposition_cm, 'left')
 
+                print(xposition_cm, yposition_cm)
                 if(xposition_cm > 20 and xposition_cm < 50 and yposition_cm > 10 and yposition_cm < 50):
                     move_joint(JointHandler, angle_initiatializer, 'close')
-                elif(xposition_cm > 20 and xposition_cm < 50 and yposition_cm > -0):
+                elif(xposition_cm > 20 and xposition_cm < 50 and yposition_cm < 10 and yposition_cm > 0):
                     yposition_cm = 20
                     move_joint(JointHandler, angle_initiatializer, 'open')
                     print("gripped")
-                    time.sleep(9)
+                    time.sleep(6)
 
                     angle_initiatializer = inverse_kinematics.get_robot_angles(
                         10, 50, 30, 'left')
                     move_joint(JointHandler, angle_initiatializer, 'open')
                     print("moving")
-                    time.sleep(5)
+                    time.sleep(4)
 
                     angle_initiatializer = inverse_kinematics.get_robot_angles(
                         10, 50, 30, 'left')
                     move_joint(JointHandler, angle_initiatializer, 'close')
                     print("resetting")
-                    time.sleep(4)
+                    time.sleep(2)
                     angle_initiatializer = inverse_kinematics.get_robot_angles(
                         10, 50, 30, 'left')
                     move_joint(JointHandler, angle_initiatializer, 'close')
-
-
-
                 else:
                     print("Object not in range")
 
