@@ -27,6 +27,7 @@ except Exception:
     sys.exit()
 
 client_id = -1
+shapes = []
 
 
 def init_remote_api_server():
@@ -91,146 +92,7 @@ def stop_simulation():
 def exit_remote_api_server():
     global client_id
 
-    ##############	ADD YOUR CODE HERE	##############
-
     sim.simxFinish(-1)
-
-
-
-def scan_image(img):
-
-
-    global shapes
-
-    ##############	ADD YOUR CODE HERE	##############
-
-    # img = cv2.imread(img_file_path)  # reading image
-    # reading image in grayscale
-    img_count = cv2.cvtColor(img, cv2.IMREAD_GRAYSCALE)
-
-    shape_dict = {}
-
-    # thresholding the greyscale image
-    _, threshold = cv2.threshold(img_count, 240, 255, cv2.THRESH_BINARY)
-    contours, image = cv2.findContours(
-        threshold, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)  # contouring all shapes in image
-    # print("contours", len(contours))
-    for i in range(1, 4):
-        # converting original image to hsv
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        # print(len(contours))
-        if i == 1:  # loop 1 to detect red shapes
-            lower_range = np.array([0, 50, 50])
-            upper_range = np.array([10, 255, 255])
-        elif i == 2:  # loop 1 to detect blue shapes
-            lower_range = np.array([94, 80, 2])
-            upper_range = np.array([126, 255, 255])
-        elif i == 3:  # loop 1 to detect green shapes
-            lower_range = np.array([25, 52, 72])
-            upper_range = np.array([102, 255, 255])
-
-        # selecting shapes with colour based on loops
-        mask = cv2.inRange(hsv, lower_range, upper_range)
-
-        # thresholding the original image
-        _, threshold = cv2.threshold(img, 240, 255, cv2.THRESH_BINARY)
-        contours, image = cv2.findContours(
-            mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)  # contouring the selected shapes
-
-        for cnt in contours:  # loop for all selected shapes
-            approx = cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)
-            cv2.drawContours(img, [approx], 0, (0), 5)  # drawing contours
-            area = cv2.contourArea(cnt)  # determining area
-            M = cv2.moments(cnt)
-            # determing centroid X coordinate
-            cX = int(M["m10"] / float(M["m00"]))
-            cY = int(M["m01"] / M["m00"])  # determing centroid y coordinate
-            # print(area)
-            # print(cX)
-            # print(cY)
-
-            # appending the required information for the shape
-            temp_list = []
-            if i == 1:
-                temp_list.append("red")
-            elif i == 2:
-                temp_list.append("blue")
-            elif i == 3:
-                temp_list.append("green")
-            temp_list.append(area)
-            temp_list.append(cX)
-            temp_list.append(cY)
-
-            if len(approx) == 4:  # for shape with 4 sides
-                x, y, w, h = cv2.boundingRect(cnt)
-                # print(x,y)
-                # print(w, h)
-                # aspect_ratio = int(int(w)/int(h))
-                # print("aspect ratio", aspect_ratio)
-
-                # determining coordinates (a, b)
-                a1 = approx[0][0][0]
-                b1 = approx[0][0][1]
-                a2 = approx[1][0][0]
-                b2 = approx[1][0][1]
-                a3 = approx[2][0][0]
-                b3 = approx[2][0][1]
-                a4 = approx[3][0][0]
-                b4 = approx[3][0][1]
-
-                l1 = ((a2-a1)*(a2-a1) + (b2-b1)*(b2-b1))**0.5  # length 1
-                # print("length of line1: ", int(l1))
-                l2 = ((a3-a2)*(a3-a2) + (b3-b2)*(b3-b2))**0.5  # length 2
-                # print("length of line2: ", int(l2))
-                l3 = ((a4-a3)*(a4-a3) + (b4-b3)*(b4-b3))**0.5  # length 3
-                # print("length of line3: ", int(l3))
-                l4 = ((a4-a1)*(a4-a1) + (b4-b1)*(b4-b1))**0.5  # length 3
-                # print("length of line4: ", int(l4))
-                # print(a1, b1, a2, b2, a3, b3, a4, b4)
-
-                # checking for square or parallelogram
-                if int(l1) <= int(l2)+2 and int(l1) >= int(l2)-2 and int(l1) <= int(l3)+2 and int(l1) >= int(l3)-2 and int(l1) <= int(l4)+2 and int(l1) >= int(l4)-2:
-
-                    if int(l1) <= h+5 and int(l1) >= h-5:
-                        shape_dict['Square'] = temp_list
-                    else:
-                        shape_dict['Parallelogram'] = temp_list
-                # checking for rectangle or parallelogram
-                elif int(l1) == int(l3) and int(l2) == int(l4):
-                    if int(l1) <= h+5 and int(l1) >= h-5:
-                        shape_dict['Rectangle'] = temp_list
-                    else:
-                        shape_dict['Parallelogram'] = temp_list
-                # checkng for trapezium
-                elif int(l4) < int(l2):
-                    shape_dict['Trapezium'] = temp_list
-
-                # print(approx)
-            # checking for circle
-            elif len(approx) == 16:
-                shape_dict['Circle'] = temp_list
-                # print("circle")
-            # checking for triangle
-            elif len(approx) == 3:
-                # print("triangle")
-                shape_dict['Triangle'] = temp_list
-            # checking for pentagon
-            elif len(approx) == 5:
-                # print("pentagon")
-                shape_dict['Pentagon'] = temp_list
-            # checking for hexagon
-            elif len(approx) == 6:
-                # print("pentagon")
-                shape_dict['Hexagon'] = temp_list
-            # print(shape_dict)
-    shapes = shape_dict
-    print(shapes)
-
-
-
-    ##################################################
-
-    return shapes
 
 
 def move_joint(jointhandler, position, gripper):
@@ -283,13 +145,15 @@ if __name__ == "__main__":
             client_id, 'NiryoOneJoint' + str(i + 1), sim.simx_opmode_oneshot_wait)
         JointHandler.append(handler)
 
-    code, visionSensorHandle = sim.simxGetObjectHandle(
-        client_id, 'Vision', sim.simx_opmode_oneshot_wait)
-
-    print(code)
+    code, visionSensorHandle = sim.simxGetObjectHandle(client_id, 'Vision', sim.simx_opmode_oneshot_wait)
+    code, visionSensorGripHandle = sim.simxGetObjectHandle(client_id, 'Vision_grip', sim.simx_opmode_oneshot_wait)
 
     return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle, 0,
-                                                                                      sim.simx_opmode_streaming + 25)
+                                                                                      sim.simx_opmode_streaming + 50)
+    return_code, grip_image_resolution, vision_sensor_grip_image = sim.simxGetVisionSensorImage(client_id,
+                                                                                                visionSensorGripHandle,
+                                                                                                0,
+                                                                                                sim.simx_opmode_streaming + 50)
 
     return_code = start_simulation()
 
@@ -314,13 +178,22 @@ if __name__ == "__main__":
         '''
         return_code, image_resolution, vision_sensor_image = sim.simxGetVisionSensorImage(client_id, visionSensorHandle,
                                                                                           0,
-                                                                                          sim.simx_opmode_oneshot_wait)
+                                                                                          sim.simx_opmode_buffer)
 
-        img = transform_vision_sensor_image(
-            vision_sensor_image, image_resolution, 1)
+        return_code, grip_image_resolution, vision_sensor_grip_image = sim.simxGetVisionSensorImage(client_id,
+                                                                                                    visionSensorGripHandle,
+                                                                                                    0,
+                                                                                                    sim.simx_opmode_buffer)
+
+        img = transform_vision_sensor_image(vision_sensor_image, image_resolution, 1)
 
 
+        grip_img = transform_vision_sensor_image(vision_sensor_grip_image, grip_image_resolution, 2)
 
+        cv2.putText(img, str(fps), (50, 50),
+                    cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+
+        img = cv2.hconcat([img, grip_img], img)
         cv2.imshow('transformed image', img)
 
         q = cv2.waitKey(1)

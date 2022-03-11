@@ -195,17 +195,18 @@ if __name__ == "__main__":
         for i, obj in enumerate(rest.iloc):
             # print(obj)
             # print((int(obj['xmin']), int(obj['ymin'])),(int(obj['xmax']), int(obj['ymax'])) )
-            cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),
-                          2)
+            cv2.rectangle(img, (int(obj['xmin']), int(obj['ymin'])), (int(obj['xmax']), int(obj['ymax'])), (0, 0, 255),2)
 
             if (obj['name'] == object_pick_list[0]):
                 object_ = obj['name']
                 xposition = (obj['xmin'] + obj['xmax']) / 2
                 yposition = (obj['ymin'] + obj['ymax']) / 2
 
-            # cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 1)),
-            #             (int(obj['xmin']), int(obj['ymin'])),
-            #             cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+            cv2.putText(img, obj['name'] + "  " + str(round(obj['confidence'], 1)),
+                         (int(obj['xmin']), int(obj['ymin'])),
+                        cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
+
+
         cv2.putText(img, str(fps), (50, 50),
                     cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 0))
 

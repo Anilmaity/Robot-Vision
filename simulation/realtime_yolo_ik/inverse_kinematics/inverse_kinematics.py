@@ -11,20 +11,20 @@ def get_position_angles(x_position, y_position, z_position):
     r1 = np.sqrt(x_position*x_position + z_position*z_position)
     phi_1 = np.arctan(z_position/x_position)
 
-    print('r1', r1)
-    print('phi 1', phi_1*180/3.14)
+    # print('r1', r1)
+    # print('phi 1', phi_1*180/3.14)
 
     phi_2 = np.arccos((a1*a1 + r1*r1 - a2*a2) / (2 * a1 * r1))
 
-    print('phi 2', phi_2*180/3.14)
+    # print('phi 2', phi_2*180/3.14)
     theta_1 = phi_1 + phi_2
-    print('theta 1', 90 - theta_1*180/3.14)
+    # print('theta 1', 90 - theta_1*180/3.14)
 
     phi_3 = np.arccos((a1*a1 - r1*r1 + a2*a2) / (2 * a1 * a2))
 
     theta_2 = phi_3*180/3.14 - 90
 
-    print('theta 2',  theta_2)
+    # print('theta 2',  theta_2)
 
     theta_0 = np.arctan(y_position/x_position)
 
@@ -188,20 +188,20 @@ def get_updated_orientation_angles(theta_0_1, theta_1, theta_2, gripper_directio
     rot_mat_3_6 = inv_rot_mat_0_3 @ rot_mat_0_6
 
     theta_5 = np.arccos(rot_mat_3_6[2, 2])
-    print('theta_5', theta_5)
-
-    print('theta_5', theta_5*180/3.14)
-    print('theta 32', rot_mat_3_6[2, 1])
+    # print('theta_5', theta_5)
+    #
+    # print('theta_5', theta_5*180/3.14)
+    # print('theta 32', rot_mat_3_6[2, 1])
 
     theta_6 = np.arcsin(rot_mat_3_6[2, 1]/np.sin(theta_5))
-
-    print('theta_6', theta_6*180/3.14)
+    #
+    # print('theta_6', theta_6*180/3.14)
 
     theta_4 = np.arcsin(rot_mat_3_6[1, 2]/np.sin(theta_5))
-
-    print('theta_4', theta_4*180/3.14)
-
-    print(joint_0_angle, joint_1_angle, joint_2_angle)
+    #
+    # print('theta_4', theta_4*180/3.14)
+    #
+    # print(joint_0_angle, joint_1_angle, joint_2_angle)
 
     # Check that the angles we calculated result in a valid rotation matrix
     r11 = np.cos(theta_4) * np.cos(theta_5) * np.cos(theta_6) - \
@@ -222,7 +222,7 @@ def get_updated_orientation_angles(theta_0_1, theta_1, theta_2, gripper_directio
                                   [r21, r22, r23],
                                   [r31, r32, r33]])
 
-    print('check rot_3_6 matrix', check_rot_mat_3_6)
+    #print('check rot_3_6 matrix', check_rot_mat_3_6)
 
     orientation_angles[0] = theta_4*180/3.14
     orientation_angles[1] = theta_5*180/3.14
