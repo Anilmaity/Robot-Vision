@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../api/static/css/index.css">
+      <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="hero-section">
+        <p>
+
+        <h1>Vision Guided <span>Robotic Arm</span> </h1>
+        <p>The Aim of this project is to develop a robot vision based robot controlling system which can allow a robotic
+            arm to track objects and take actions accordingly.</p>
+        </p>
+    </div>
+
+    <section>
+        <div class="approach">
+            <h2>Approach</h2>
+            <img src="../api/static/images/approach.png" alt="Approach">
+        </div>
+    </section>
+
+
+    <section>
+        <div class="simulation">
+            <h2>Simulation</h2>
+            <p class="main-description">For simulation, we used <a href="https://www.coppeliarobotics.com/">V-rep
+                    Coppeliasim</a> as a ROBOT
+                simulator. For programming we used <a href="https://www.python.org/">Python</a> and <a
+                    href="https://pypi.org/project/yolov5/">yolov5</a> library for object detection </p>
+
+
+            <div class="simulation-videos">
+                <h3>Simulation Video</h3>
+                <div class="video-container">
+
+                    <video src="../api/static/videos/demo_video.mp4" controls>
+
+                    </video>
+
+                    <div class="video-description">
+
+                        <p>In this Simulation as we can see that, as soon as the camera detects the object using the
+                            yolov5
+                            algorithm the arm is manipulated to locate the object which uses a custom inverse kinematics
+                            in
+                            the
+                            background. There's another camera on the gripper which
+                            helps in adjusting the arm</p>
+
+
+                        <p>
+                            It grips the object and once again gets ready for another object.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </section>
+
+
+    <section>
+        <div class="hardware">
+            <h2>Robot Hardware</h2>
+            <img src="../api/static/images/niryo_front.jpg" alt="niryo robot">
+            <p>For hardware we used an opensource Robot model from <a
+                    href="https://niryo.com/fr/product/niryo-one/">Niryo Robotics</a></p>
+            <div class="hardware-printing">
+                <h3>3D-printing</h3>
+                <video src="../api/static/videos/3d_printing.mp4" controls>
+
+                </video>
+                <p>The robot part is being 3D-printed</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="authors">
+            <p>Made by <span>Anil Maity</span> and <span>Darshan Bajania</span></p>
+            <p>Guided by <span>Prof. Umang Jani</span></p>
+        </div>
+    </section>
+</body>
+
+</html>

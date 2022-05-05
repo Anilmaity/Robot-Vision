@@ -1,0 +1,196 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,900&family=Roboto:wght@100;300;400;500;700;900&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+}
+
+img {
+  width: 100%;
+}
+video {
+  width: 100%;
+}
+.hero-section {
+  width: 100%;
+  text-align: center;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1em;
+}
+
+.hero-section h1 {
+  font-size: 2.5rem;
+  color: #01cef9;
+  font-weight: 400;
+}
+
+.hero-section h1 span {
+  color: black;
+}
+
+.hero-section p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: rgb(99, 99, 99);
+}
+
+@media screen and (min-width: 60em) {
+  .hero-section {
+    height: 100vh;
+    justify-content: center;
+  }
+
+  .hero-section h1 {
+    font-size: 3.5rem;
+    font-weight: 300;
+  }
+
+  .hero-section p {
+    width: 60%;
+    display: block;
+    margin: 0 auto;
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 24px;
+  }
+}
+
+/* approach */
+
+.approach {
+  width: 100%;
+  text-align: center;
+  margin: 2em 0;
+}
+
+.approach h2 {
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.approach img {
+  width: 90%;
+}
+
+.simulation {
+  width: 100%;
+  text-align: center;
+  margin: 2em 0;
+  padding: 1em;
+}
+
+.simulation h2,
+.simulation h3 {
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.simulation p {
+  font-size: 1.1rem;
+  text-align: left;
+  color: rgb(99, 99, 99);
+}
+
+@media screen and (min-width: 60em) {
+  .simulation {
+    padding: 2em;
+  }
+  .simulation .video-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .simulation .simulation-videos {
+    margin-top: 4em;
+  }
+  .simulation .video-description {
+    padding: 2em;
+    font-size: 1.2rem;
+  }
+
+  .simulation p {
+    text-align: left;
+    font-size: 1.2rem;
+    line-height: 25px;
+  }
+  .simulation h2 {
+    font-size: 2.5rem;
+    font-weight: 400;
+  }
+  .simulation h3 {
+    font-weight: 300;
+  }
+  .simulation .main-description {
+    width: 60%;
+    display: block;
+    margin: 0 auto;
+    text-align: center;
+    line-height: 30px;
+  }
+}
+
+.hardware {
+  width: 100%;
+  padding: 1em;
+}
+
+.hardware h2 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+.hardware p {
+  color: rgb(99, 99, 99);
+  font-size: 1.1rem;
+}
+.hardware .hardware-printing h3 {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 400;
+}
+
+@media screen and (min-width: 60em) {
+  .hardware img {
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .hardware p {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .hardware .hardware-printing {
+    width: 100%;
+  }
+
+  .hardware video {
+    width: 50%;
+    margin: 0 auto;
+    display: block;
+  }
+}
+
+.authors {
+  padding: 1em;
+  padding-bottom: 3em;
+}
+
+.authors p {
+  font-size: 1.2rem;
+  color: rgb(99, 99, 99);
+  margin: 0;
+}
+
+.authors p span {
+  font-weight: 500;
+  color: rgb(52, 51, 51);
+}
