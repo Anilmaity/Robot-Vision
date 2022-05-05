@@ -1,8 +1,47 @@
-### Example user template template
-### Example user template
 
-# IntelliJ project files
-.idea
-*.iml
-out
-gen
+
+/api/migrations/Api_functions/
+api/__pycache__/__init__.cpython-38.pyc
+api/__pycache__/admin.cpython-38.pyc
+api/__pycache__/apps.cpython-38.pyc
+api/__pycache__/models.cpython-38.pyc
+api/__pycache__/serilizers.cpython-38.pyc
+api/__pycache__/urls.cpython-38.pyc
+api/__pycache__/views.cpython-38.pyc
+api/apis/__pycache__/__init__.cpython-38.pyc
+api/apis/__pycache__/app_version_check.cpython-38.pyc
+api/apis/__pycache__/auto_order_form_fill.cpython-38.pyc
+api/apis/__pycache__/currentorder.cpython-38.pyc
+api/apis/__pycache__/driver_detail_update.cpython-38.pyc
+api/apis/__pycache__/driverlist.cpython-38.pyc
+api/apis/__pycache__/getdriverlocation.cpython-38.pyc
+api/apis/__pycache__/getrestaurentdetail.cpython-38.pyc
+api/apis/__pycache__/getrestaurentlocation.cpython-38.pyc
+api/apis/__pycache__/id_age_verify.cpython-38.pyc
+api/apis/__pycache__/login.cpython-38.pyc
+api/apis/__pycache__/logout.cpython-38.pyc
+api/apis/__pycache__/oder_prepared.cpython-38.pyc
+api/apis/__pycache__/order_cancel.cpython-38.pyc
+api/apis/__pycache__/order_filter_restaurent.cpython-38.pyc
+api/apis/__pycache__/order_update.cpython-38.pyc
+api/apis/__pycache__/orderassign.cpython-38.pyc
+api/apis/__pycache__/orderby_assign.cpython-38.pyc
+api/apis/__pycache__/orderdiliver.cpython-38.pyc
+api/apis/__pycache__/orderform.cpython-38.pyc
+api/apis/__pycache__/orderpickedup.cpython-38.pyc
+api/apis/__pycache__/Register.cpython-38.pyc
+api/apis/__pycache__/report.cpython-38.pyc
+api/apis/__pycache__/restaurant_detail_update.cpython-38.pyc
+api/apis/__pycache__/resturantregister.cpython-38.pyc
+api/apis/__pycache__/resturentlist.cpython-38.pyc
+api/apis/__pycache__/status.cpython-38.pyc
+api/apis/__pycache__/Task.cpython-38.pyc
+api/apis/__pycache__/track_order.cpython-38.pyc
+api/apis/__pycache__/update_orderlocation.cpython-38.pyc
+api/migrations/__pycache__/__init__.cpython-38.pyc
+api/migrations/__pycache__/0001_initial.cpython-38.pyc
+djangoProject/__pycache__/__init__.cpython-38.pyc
+djangoProject/__pycache__/gcloud.cpython-38.pyc
+djangoProject/__pycache__/settings.cpython-38.pyc
+djangoProject/__pycache__/urls.cpython-38.pyc
+djangoProject/__pycache__/wsgi.cpython-38.pyc
