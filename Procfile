@@ -1,2 +1,2 @@
 python manage.py collectstatic --noinput
-web: gunicorn Fin_sim_backend.wsgi --log-file -
+web: gunicorn robotvision.wsgi --log-file -
