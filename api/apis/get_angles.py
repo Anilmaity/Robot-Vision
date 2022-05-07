@@ -17,6 +17,6 @@ class get_angles(APIView):
 
         robot = Robot.objects.get(id_no=id)
 
-        ser = RobotSerializer(robot,many=True)
+        ser = RobotSerializer(robot)
         return JsonResponse(ser.data, safe=False)
 
