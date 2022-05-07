@@ -15,7 +15,7 @@ class set_angles(APIView):
 
 
     def post(self, request):
-        id = request.data['id']
+        id = request.data['id_no']
         stepper_1 = request.data['stepper_1']
         stepper_2 = request.data['stepper_2']
         stepper_3 = request.data['stepper_3']
@@ -25,7 +25,7 @@ class set_angles(APIView):
 
 
 
-        robot = Robot.objects.get(id=id)
+        robot = Robot.objects.get(id_no=id)
         robot.stepper_1 = stepper_1
         robot.stepper_2 = stepper_2
         robot.stepper_3 = stepper_3

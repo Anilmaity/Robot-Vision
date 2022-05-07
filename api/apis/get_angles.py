@@ -13,9 +13,9 @@ class get_angles(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        id = request.data['id']
+        id = request.data['id_no']
 
-        robot = Robot.objects.get(id=id)
+        robot = Robot.objects.get(id_no=id)
 
         ser = RobotSerializer(robot,many=True)
         return JsonResponse(ser.data, safe=False)

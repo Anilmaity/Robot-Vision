@@ -15,16 +15,15 @@ class register_robot(APIView):
 
 
     def post(self, request):
-        id = request.data['id']
+        id = request.data['id_no']
 
-        robot = Robot.objects.get(id=id).exists()
+        robot = Robot.objects.get(id_no=id).exists()
         if(robot):
             return Response({"message": "Robot already exists"})
 
         else:
 
             robot = Robot.objects.create(
-                id=id,
                 id_no=id
             )
             robot.save()
