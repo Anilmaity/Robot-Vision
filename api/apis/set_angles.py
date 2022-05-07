@@ -22,6 +22,8 @@ class set_angles(APIView):
         servo_1 = request.data['servo_1']
         servo_2 = request.data['servo_2']
         servo_3 = request.data['servo_3']
+        grip = request.data['grip']
+
 
 
 
