@@ -7,7 +7,7 @@ x = requests.post(url, data = myobj)
 
 print(x.text)
 
-while(True):
+def get_angles():
     x = requests.post(url, data=myobj)
     print(x.text)
     time.sleep(1)
