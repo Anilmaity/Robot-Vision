@@ -12,8 +12,8 @@ from .apis import set_angles
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('get_angles/', get_angles.get_angles() , ),
-    path('register_robot/', register_robot.register_robot(), ),
-    path('set_angles/', set_angles.set_angles(), ),
+    path('get_angles/', get_angles.get_angles.as_view() , name='index'),
+    path('register_robot/', register_robot.register_robot.as_view(), ),
+    path('set_angles/', set_angles.set_angles.as_view(), ),
 
               ] + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

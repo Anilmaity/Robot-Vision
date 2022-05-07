@@ -13,10 +13,7 @@ class get_angles(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        id = request.data['username']
-
-
-
+        id = request.data['id']
 
         robot = Robot.objects.get(id=id)
 
