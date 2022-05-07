@@ -78,8 +78,12 @@ WSGI_APPLICATION = 'robotvision.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dlkj5sc3e25q5',
+        'USER': 'ccnuggtuceixsa',
+        'PASSWORD': '70e0211ad3ff0e623921640946653860f23c5828b2b955638bc7da23575dac37',
+        'HOST': 'ec2-52-200-215-149.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
