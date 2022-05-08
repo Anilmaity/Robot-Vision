@@ -33,30 +33,39 @@ def step_setup():
 
 
 def step_run(steps, stepper_no):
-    for i,stepper in  enumerate(stepper_no):
+    for i, stepper in enumerate(stepper_no):
+        print(stepper_dir_pin[stepper])
+        print(stepper_sig_pin[stepper])
+
+        print(steps[i])
         if steps[i] >= 0:
             GPIO.output(stepper_dir_pin[stepper], GPIO.HIGH)
-            for i in range(0, steps[i]):
-                GPIO.output(stepper_sig_pin[stepper], GPIO.LOW)
-                time.sleep(0.001)
-                GPIO.output(stepper_sig_pin[stepper], GPIO.HIGH)
-                time.sleep(0.001)
-            print("complete_cw")
-
         elif steps[i] < 0:
             GPIO.output(stepper_dir_pin[stepper], GPIO.LOW)
-            for i in range(0, abs(steps[i])):
-                GPIO.output(stepper_sig_pin[stepper], GPIO.LOW)
-                time.sleep(0.001)
+
+    maxsteps = max(steps)
+    # if maxsteps > 500:
+    #     maxsteps = 500
+
+    for i in range(0, maxsteps):
+
+        for j, stepper in enumerate(stepper_no):
+            if steps[j] >= i:
                 GPIO.output(stepper_sig_pin[stepper], GPIO.HIGH)
-                time.sleep(0.001)
-            print("complete_ccw")
+        time.sleep(0.001)
+
+        for j, stepper in enumerate(stepper_no):
+            if steps[j] >= i:
+                GPIO.output(stepper_sig_pin[stepper], GPIO.LOW)
+
+        time.sleep(0.001)
 
 
 
 step_setup()
 
 while True:
+    global joints
     x = requests.post(url, data=myobj)
     data = x.json()
 
