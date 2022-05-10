@@ -5,9 +5,13 @@ myobj = {'id_no': '00'}
 
 x = requests.post(url, data = myobj)
 
-print(x.text)
 
 def get_angles():
+    start = time.time()
     x = requests.post(url, data=myobj)
-    print(x.text)
-    time.sleep(1)
+    end = time.time()
+    print(end - start)
+
+while True:
+    get_angles()
+
