@@ -66,3 +66,4 @@ django-cors-headers==3.11.0
 PyJWT==2.3.0
 drf-jwt==1.19.2
 djangorestframework-simplejwt==5.0.0
+django-heroku==0.3.1
