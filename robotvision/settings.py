@@ -137,3 +137,5 @@ django_heroku.settings(locals())
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+#git push heroku website:main
