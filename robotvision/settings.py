@@ -98,16 +98,16 @@ DATABASES = {
     # }
 
 
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-          'PASSWORD': 'OlQiELdagvtl@Gz$',
-       # 'PASSWORD': 'z23z2I3wMoEqClji',
-
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'postgres',
+    #     'USER': 'postgres',
+    #       'PASSWORD': 'OlQiELdagvtl@Gz$',
+    #    # 'PASSWORD': 'z23z2I3wMoEqClji',
+    #
+    #     'HOST': '127.0.0.1',
+    #     'PORT': '5432',
+    # },
     # .\cloud_sql_proxy.exe -instances="testing-352304:asia-south1:robotvisiondatabase"=tcp:5432
     # gcloud config set project testing-352304
 
