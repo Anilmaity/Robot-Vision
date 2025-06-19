@@ -3,65 +3,132 @@ import math
 import pybullet as p
 import pybullet_data
 
-# Connect to PyBullet
-p.connect(p.GUI)
-p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
-robot = p.loadURDF("niryo.urdf", useFixedBase=True)
+def connect_pybullet(gui=True):
+    """Connect to the PyBullet simulator."""
+    if gui:
+        p.connect(p.GUI)
+    else:
+        p.connect(p.DIRECT)
+    p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
-end_effector_index = 6  # Change if needed
 
-# Get movable joints (only revolute and prismatic, limit to 6 DoF)
-movable_joints = []
-for joint_index in range(p.getNumJoints(robot)):
-    joint_info = p.getJointInfo(robot, joint_index)
-    joint_type = joint_info[2]
-    if joint_type in [p.JOINT_REVOLUTE, p.JOINT_PRISMATIC] and len(movable_joints) < 6:
-        movable_joints.append(joint_index)
+def load_robot(urdf_path="niryo.urdf", fixed_base=True):
+    """Load the robot URDF into the simulation."""
+    robot_id = p.loadURDF(urdf_path, useFixedBase=fixed_base)
+    return robot_id
 
-print("Movable joints:", movable_joints)
 
-# Define circular path parameters (along Z-Y plane)
-radius = 0.10  # 20 cm
-center_y = 0.2
-center_z = 0.2
-fixed_x = 0.0
-num_points = 100  # Total points in the circle
-duration = 20  # Total duration in seconds for one complete circle
-sleep_time = duration / num_points
+def get_movable_joints(robot_id, max_dof=6):
+    """Retrieve indices of movable (revolute/prismatic) joints, limited to max_dof."""
+    movable = []
+    for joint_idx in range(p.getNumJoints(robot_id)):
+        joint_info = p.getJointInfo(robot_id, joint_idx)
+        joint_type = joint_info[2]
+        if joint_type in [p.JOINT_REVOLUTE, p.JOINT_PRISMATIC] and len(movable) < max_dof:
+            movable.append(joint_idx)
+    return movable
 
-print("\n--- Starting Circular Motion ---\n")
 
-for i in range(num_points + 1):  # +1 to complete the circle
-    theta = (2 * math.pi * i) / num_points  # Angle in radians
-    target_y = center_y + radius * math.cos(theta)
-    target_z = center_z + radius * math.sin(theta)
-    target_pos = [fixed_x, target_y, target_z]
+def compute_circular_path(radius, center, num_points, plane='yz'):
+    """
+    Generate a list of target positions forming a circular path.
 
-    # Compute IK for the target position
-    joint_angles = p.calculateInverseKinematics(robot, end_effector_index, target_pos)
+    Args:
+        radius (float): Circle radius.
+        center (list): [x, y, z] center of the circle.
+        num_points (int): Number of points to generate.
+        plane (str): 'yz' or 'xy' plane.
 
-    # Convert to degrees and limit to movable joints
-    joint_angles_deg = [math.degrees(angle) for angle in joint_angles[:len(movable_joints)]]
+    Returns:
+        List of [x, y, z] target positions.
+    """
+    path = []
+    for i in range(num_points + 1):
+        theta = (2 * math.pi * i) / num_points
+        if plane == 'yz':
+            x = center[0]
+            y = center[1] + radius * math.cos(theta)
+            z = center[2] + radius * math.sin(theta)
+        elif plane == 'xy':
+            x = center[0] + radius * math.cos(theta)
+            y = center[1] + radius * math.sin(theta)
+            z = center[2]
+        else:
+            raise ValueError("Invalid plane. Use 'yz' or 'xy'.")
+        path.append([x, y, z])
+    return path
 
-    print(f"Step {i+1}: Target Pos = {target_pos}")
-    print(f"Joint Angles (Degrees): {joint_angles_deg}\n")
 
-    # Apply IK solution to each movable joint
-    for j, joint_index in enumerate(movable_joints):
-        p.setJointMotorControl2(robot,
-                                joint_index,
-                                p.POSITION_CONTROL,
-                                targetPosition=joint_angles[j])
+def move_robot_along_path(robot_id, end_effector_idx, movable_joints, path, duration):
+    """
+    Move robot along the given path.
 
-    # Step simulation
-    for _ in range(10):
-        p.stepSimulation()
-        time.sleep(1.0 / 240.0)
+    Args:
+        robot_id (int): PyBullet robot unique ID.
+        end_effector_idx (int): End-effector link index.
+        movable_joints (list): Indices of movable joints.
+        path (list): List of target positions.
+        duration (float): Time in seconds to complete the path.
+    """
+    sleep_time = duration / len(path)
 
-    time.sleep(sleep_time)
+    for idx, target_pos in enumerate(path):
+        joint_angles = p.calculateInverseKinematics(robot_id, end_effector_idx, target_pos)
+        joint_angles_deg = [math.degrees(angle) for angle in joint_angles[:len(movable_joints)]]
+        processed_deg = [round(angle, 1) for angle in joint_angles_deg]
 
-print("\n--- Circular Motion Completed ---\n")
+        print(f"Step {idx + 1}: Target Pos = {target_pos}")
+        print(f"Processed Joint Angles (Degrees): {processed_deg}\n")
 
-# Hold final position
-time.sleep(5)
+        for j, joint_idx in enumerate(movable_joints):
+            p.setJointMotorControl2(robot_id,
+                                    joint_idx,
+                                    p.POSITION_CONTROL,
+                                    targetPosition=joint_angles[j])
+
+        # Smooth simulation steps
+        for _ in range(10):
+            p.stepSimulation()
+            time.sleep(1.0 / 240.0)
+
+        time.sleep(sleep_time)
+
+
+def perform_circular_motion(revolutions=1, plane='yz'):
+    """
+    Perform circular motion of the robot end-effector in the specified plane.
+
+    Args:
+        revolutions (int): Number of complete circular revolutions.
+        plane (str): 'yz' or 'xy' for the circular plane.
+    """
+
+
+    path = compute_circular_path(radius, center, num_points, plane=plane)
+
+    print(f"\n--- Starting Circular Motion in {plane.upper()} Plane ---\n")
+    for rev in range(revolutions):
+        print(f"--- Revolution {rev + 1} ---")
+        move_robot_along_path(robot_id, end_effector_idx, movable_joints, path, duration)
+
+    print("\n--- Circular Motion Completed ---\n")
+    time.sleep(5)  # Hold final pose
+
+
+if __name__ == "__main__":
+    # Run motion for 5 revolutions in the XY plane
+    connect_pybullet(gui=True)
+    robot_id = load_robot()
+    end_effector_idx = 6  # Adjust if different
+    movable_joints = get_movable_joints(robot_id)
+
+    print("Movable Joints:", movable_joints)
+
+    radius = 0.10  # 10 cm
+    center = [0.0, 0.2, 0.2]  # Center coordinates
+    num_points = 100
+    duration = 5  # seconds per revolution
+
+    perform_circular_motion(revolutions=2, plane='xy')  # Change 'xy' to 'yz' for ZY plane
+    perform_circular_motion(revolutions=2, plane='yz')  # Change 'xy' to 'yz' for ZY plane
