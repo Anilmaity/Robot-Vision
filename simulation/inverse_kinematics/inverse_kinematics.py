@@ -260,5 +260,16 @@ def get_robot_angles(x_given_position, y_given_position, z_given_position, gripp
 
     return calc_joint_angles
 
+if __name__ == "__main__":
+    # Example usage:
+    x_position = 30
+    y_position = 40
+    z_position = 50
+    gripper_orientation = 'left'
+    angles = get_robot_angles(x_position, y_position, z_position, gripper_orientation)
+    print(angles)
+
+    # Uncomment the line below to test the function with specific values
+    get_robot_angles(30, 40, 50, 'left')
 
 # get_robot_angles(1, 30, 40)
